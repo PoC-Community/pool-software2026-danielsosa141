@@ -83,12 +83,34 @@ app.post("/urls", valideteNewUrl, (req, res, next) => {
       createdAt: new Date().toISOString(),
       clickCount: 0,
     };
-    urlStorage.set(id, record);
+    urlStorage.set(id, saveUrl);
 
     return res.status(201).json(saveUrl);
   } catch (err) {
     next(err);
   }
+});
+
+app.get("/urls/:id", (req, res) => {
+  const { id } = req.params;
+  const saveUrl = urlStorage.get(id);
+  if (!saveUrl) {
+    return res.status(404).json({ error: "URL not found" });
+  }
+  res.json(saveUrl);
+});
+
+app.get(":/id", (req, res) => {
+  const { id } = req.params;
+  const saveUrl = urlStorage(id);
+
+  if (!saveUrl) {
+    return res.status(404).json({ error: "URL not found" });
+  }
+  saveUrl.clickCount += 1;
+  urlStorage.set(id, saveUrl);
+
+  return res.redirect(301, saveUrl.originalUrl);
 });
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
